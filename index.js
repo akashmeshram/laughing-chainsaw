@@ -19,18 +19,55 @@ app.get('/chatbot', (req, res) => {
     res.json("done")
 })
 
+// app.get('/vaccine_slot', async (req, res) => {
+//     // Will take date and pin as param
+//     console.log(req.query.date, req.query.pin)
+//     const date = req.query.date || '28-05-2021';
+//     const pin = req.query.pin || '110001';
+//     const url = req.query.url || `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=${pin}&date=${date}`;
+//     axios.get(url)
+//         .then(function (response) {
+//             const {centers} = response.data;
+//             let data = [];
+//             if(centers && centers.length > 0) {
+//                 data = centers.map((item) => [
+//                     item.name, 
+//                     item.address, 
+//                     `from: ${item.from}`, 
+//                     `to: ${item.to}`, 
+//                     ' '].join('\n'));
+//             } else {
+//                 res.send('')
+//             }
+//             res.send(data.join('\n'))
+//         })
+//         .catch(function (error) {
+//             console.log(error);
+//             const data = 'G.B.Pant Hospital DH SITE 2 \n .L.N Marg, Delhi Gate, New Delhi 110001 \n from: 09:00:00 \n from: 21:00:00'
+//             res.send(data)
+//         })
+// })
+
 app.get('/vaccine_slot', async (req, res) => {
     // Will take date and pin as param
     console.log(req.query.date, req.query.pin)
     const date = req.query.date || '28-05-2021';
     const pin = req.query.pin || '110001';
-    const url = req.query.url || `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=${pin}&date=${date}`;
+    const url = req.query.url || `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByPin?pincode=${pin}&date=${date}`;
     axios.get(url)
         .then(function (response) {
-            const {centers} = response.data;
+            const {sessions} = response.data;
             let data = [];
-            if(centers && centers.length > 0) {
-                data = centers.map((item) => [item.name, item.address, `from: ${item.from}`, `to: ${item.to}`, ' '].join('\n'));
+            if(sessions && sessions.length > 0) {
+                data = sessions.map((item) => [
+                    item.name, 
+                    item.address, 
+                    `from: ${item.from}`, 
+                    `to: ${item.to}`, 
+                    `min-age: ${item.min_age_limit}`,
+                    `vaccine: ${item.vaccine}`,
+                    `slots: ${item.slots.join('\n')}`,
+                    ' '].join('\n'));
             } else {
                 res.send('')
             }
